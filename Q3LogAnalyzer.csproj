@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0250C5EE-755E-44F5-8F46-906E15FC321D}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Q3LogAnalyzer</RootNamespace>
+    <AssemblyName>q3la</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>_bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>_bin\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\Q3.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\EventType.cs" />
+    <Compile Include="Classes\GameType.cs" />
+    <Compile Include="Classes\TeamStatistics.cs" />
+    <Compile Include="Classes\TeamList.cs" />
+    <Compile Include="Controls\ControlCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\GraphLib\Graph.cs" />
+    <Compile Include="Controls\GraphLib\GraphBounds.cs" />
+    <Compile Include="Controls\GraphLib\GraphColorProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\GraphLib\GraphColorProvider.Designer.cs">
+      <DependentUpon>GraphColorProvider.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GraphLib\GraphViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\GraphLib\GraphViewer.Designer.cs">
+      <DependentUpon>GraphViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GraphLib\InteractiveGraphViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\GraphLib\InteractiveGraphViewer.Designer.cs">
+      <DependentUpon>InteractiveGraphViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GraphLib\LegendControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\GraphLib\LegendControl.designer.cs">
+      <DependentUpon>LegendControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GraphLib\LegendLabel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\GraphLib\LegendLabel.Designer.cs">
+      <DependentUpon>LegendLabel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GraphLib\PieDiagram.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\GraphLib\PieDiagram.Designer.cs">
+      <DependentUpon>PieDiagram.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GraphLib\ScaledViewerBase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\GraphLib\ScaledViewerBase.Designer.cs">
+      <DependentUpon>ScaledViewerBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ListViewEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\frmLoading.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmLoading.Designer.cs">
+      <DependentUpon>frmLoading.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\ColumnSorter.cs" />
+    <Compile Include="Classes\PlayerList.cs" />
+    <Compile Include="Classes\Player.cs" />
+    <Compile Include="Classes\Record.cs" />
+    <Compile Include="Classes\RecordList.cs" />
+    <Compile Include="Classes\Session.cs" />
+    <Compile Include="Classes\SessionList.cs" />
+    <Compile Include="Classes\Statistics.cs" />
+    <Compile Include="Classes\Team.cs" />
+    <Compile Include="Controls\ControlButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Forms\frmMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmMain.Designer.cs">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\Helper.cs" />
+    <Compile Include="Helpers\HRTimer.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\GraphLib\InteractiveGraphViewer.resx">
+      <DependentUpon>InteractiveGraphViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\GraphLib\LegendControl.resx">
+      <DependentUpon>LegendControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\GraphLib\LegendLabel.resx">
+      <DependentUpon>LegendLabel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmMain.resx">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmLoading.resx">
+      <DependentUpon>frmLoading.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Q3.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
