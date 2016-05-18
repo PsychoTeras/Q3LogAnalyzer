@@ -107,7 +107,7 @@ namespace Q3LogAnalyzer.Classes
             Dictionary<string, Statistics> statistics = new Dictionary<string, Statistics>(Players.Count);
             foreach (KeyValuePair<string, Player> player in Players)
             {
-                statistics.Add(player.Key, Statistics.Calculate(Records, player.Value));
+                statistics.Add(player.Key, Statistics.Calculate(Records, player.Value, GameType));
             }
 
             switch (GameType)

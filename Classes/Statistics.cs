@@ -28,10 +28,10 @@ namespace Q3LogAnalyzer.Classes
 
 #region Static ctor
 
-        public static Statistics Calculate(RecordList records, Player player)
+        public static Statistics Calculate(RecordList records, Player player, GameType gameType)
         {
             Statistics statistics = new Statistics();
-            statistics.GetStatistics(records, player);
+            statistics.GetStatistics(records, player, gameType);
             return statistics;
         }
 
@@ -45,7 +45,7 @@ namespace Q3LogAnalyzer.Classes
 
 #region Class methods
 
-        private void GetStatistics(RecordList records, Player player)
+        private void GetStatistics(RecordList records, Player player, GameType gameType)
         {
             Player = player;
 
@@ -56,13 +56,27 @@ namespace Q3LogAnalyzer.Classes
             SuicidesCount = records.GetSuicidesCount(player.Name);
             SwimmingsCount = records.GetSwimingsCount(player.Name);
 
-            CalculateTotalScores();
-            CalculateIntermediateEfficiency();
+            CalculateTotalScores(gameType);
+
+            switch (gameType)
+            {
+                case GameType.TeamDeathmatch:
+                    CalculateIntermediateEfficiency();
+                    break;
+            }
         }
 
-        private void CalculateTotalScores()
+        private void CalculateTotalScores(GameType gameType)
         {
-            TotalScores = KillsCount - TeamKillsCount - SuicidesCount - SwimmingsCount;
+            switch (gameType)
+            {
+                case GameType.Deathmatch:
+                    TotalScores = KillsCount + TeamKillsCount - SuicidesCount - SwimmingsCount;
+                    break;
+                case GameType.TeamDeathmatch:
+                    TotalScores = KillsCount - TeamKillsCount - SuicidesCount - SwimmingsCount;
+                    break;
+            }
         }
 
         private void CalculateIntermediateEfficiency()

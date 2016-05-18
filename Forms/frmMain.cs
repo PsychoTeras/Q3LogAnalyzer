@@ -123,7 +123,7 @@ namespace Q3LogAnalyzer.Forms
                     case GameType.Deathmatch:
                         item.SubItems.Add(TextNoValue);
                         item.SubItems.Add(stat.TotalScores.ToString());
-                        item.SubItems.Add(stat.KillsCount.ToString());
+                        item.SubItems.Add(TextNoValue);
                         item.SubItems.Add(TextNoValue);
                         item.SubItems.Add(stat.TotalDeathsCount.ToString());
                         item.SubItems.Add(TextNoValue);
@@ -131,7 +131,7 @@ namespace Q3LogAnalyzer.Forms
                         item.SubItems.Add(stat.SwimmingsCount.ToString());
                         item.SubItems.Add(TextNoValue);
                         break;
-                    default:
+                    case GameType.TeamDeathmatch:
                         item.SubItems.Add(stat.Player.Team.ToString());
                         item.SubItems.Add(stat.TotalScores.ToString());
                         item.SubItems.Add(stat.KillsCount.ToString());
@@ -195,7 +195,7 @@ namespace Q3LogAnalyzer.Forms
                         case GameType.Deathmatch:
                             ignoreSession = statistics.Length <= 1 || statistics.Sum(s => Math.Abs(s.TotalScores)) <= 1;
                             break;
-                        default:
+                        case GameType.TeamDeathmatch:
                             ignoreSession = statistics.Sum(s => s.Efficiency) <= 1;
                             break;
                     }
@@ -229,7 +229,7 @@ namespace Q3LogAnalyzer.Forms
                         sessionHeader = string.Format("{0} Winner: {1}", sessionHeader, winner.Player.Name);
                         break;
                     }
-                    default:
+                    case GameType.TeamDeathmatch:
                     {
                         TeamStatistics teamStatistics = session.CalculateTeamStatistics(statistics);
                         if (teamStatistics.IsCompletedSession)
