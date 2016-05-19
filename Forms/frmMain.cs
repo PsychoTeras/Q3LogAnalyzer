@@ -41,6 +41,23 @@ namespace Q3LogAnalyzer.Forms
             Helper.BringWindowToFront(Handle);
         }
 
+        private void ProcessCommandLineParams()
+        {
+            string[] args = Environment.GetCommandLineArgs();
+            for (int i = 1; i < args.Length; i++)
+            {
+                string arg = args[i].ToLower();
+                switch (arg)
+                {
+                    
+                }
+            }
+            if (args.Length > 1)
+            {
+                LoadLogFile(args[1]);
+            }
+        }
+
         private void InitializeApplication()
         {
             _lvColumnSorters = new Dictionary<ListView, ColumnSorter>();
@@ -60,11 +77,7 @@ namespace Q3LogAnalyzer.Forms
 
             ListViewColumnClick(lvStatistic, new ColumnClickEventArgs(1));
 
-            string[] args = Environment.GetCommandLineArgs();
-            if (args.Length > 1)
-            {
-                LoadLogFile(args[1]);
-            }
+            ProcessCommandLineParams();
         }
 
         private void LockUpdate()
