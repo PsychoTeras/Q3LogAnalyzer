@@ -81,11 +81,9 @@ namespace Q3LogAnalyzer.Classes
 
         private void CalculateIntermediateEfficiency()
         {
-            //float victimsCoeff = TotalDeathsCount - BackstabsCount*0.3f;
-            float victimsCoeff = TotalDeathsCount - BackstabsCount;
-            victimsCoeff = victimsCoeff == 0 ? 1 : victimsCoeff;
+            float victimsCoeff = Math.Max(TotalDeathsCount - BackstabsCount, 1);
             IntermediateEfficiency = Math.Max(TotalScores/victimsCoeff, 0);
-            EfficiencyPenalty = (float) (IntermediateEfficiency <= 0 ? 0 : Math.Log10(IntermediateEfficiency));
+            EfficiencyPenalty = IntermediateEfficiency/victimsCoeff;
         }
 
         public void CalculateEfficiencyPenalty(RecordList records, string player,

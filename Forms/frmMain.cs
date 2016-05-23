@@ -34,11 +34,7 @@ namespace Q3LogAnalyzer.Forms
         public frmMain()
         {
             InitializeComponent();
-            using (new frmLoading())
-            {
-                InitializeApplication();
-            }
-            Helper.BringWindowToFront(Handle);
+            InitializeApplication();
         }
 
         private void ProcessCommandLineParams()
@@ -60,11 +56,18 @@ namespace Q3LogAnalyzer.Forms
                 }
             }
 
-            if (LoadLogFile(logFile) && copyLogLocally)
+            if (!string.IsNullOrEmpty(logFile) && File.Exists(logFile))
             {
-                string destFileName = Path.GetFileName(logFile);
-                string destFilePath = Path.Combine(Application.StartupPath, destFileName);
-                File.Copy(logFile, destFilePath, true);
+                using (new frmLoading())
+                {
+                    if (LoadLogFile(logFile) && copyLogLocally)
+                    {
+                        string destFileName = Path.GetFileName(logFile);
+                        string destFilePath = Path.Combine(Application.StartupPath, destFileName);
+                        File.Copy(logFile, destFilePath, true);
+                    }
+                }
+                Helper.BringWindowToFront(Handle);
             }
         }
 
