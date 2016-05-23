@@ -81,9 +81,10 @@ namespace Q3LogAnalyzer.Classes
 
         private void CalculateIntermediateEfficiency()
         {
-            float totalVictims = TotalDeathsCount - BackstabsCount - SuicidesCount - SwimmingsCount;
-            float victimsCoeff = totalVictims*0.3f;
-            IntermediateEfficiency = Math.Max(TotalScores*victimsCoeff, 0);
+            //float victimsCoeff = TotalDeathsCount - BackstabsCount*0.3f;
+            float victimsCoeff = TotalDeathsCount - BackstabsCount;
+            victimsCoeff = victimsCoeff == 0 ? 1 : victimsCoeff;
+            IntermediateEfficiency = Math.Max(TotalScores/victimsCoeff, 0);
             EfficiencyPenalty = (float) (IntermediateEfficiency <= 0 ? 0 : Math.Log10(IntermediateEfficiency));
         }
 
@@ -130,6 +131,11 @@ namespace Q3LogAnalyzer.Classes
             Efficiency = teamEfficiencySum > 0
                 ? 1/teamEfficiencySum*IntermediateEfficiency
                 : 0;
+        }
+
+        public override string ToString()
+        {
+            return Player.ToString();
         }
 
 #endregion

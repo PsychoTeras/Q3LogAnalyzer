@@ -13,7 +13,7 @@ namespace Q3LogAnalyzer.Classes
 #region Private fields
 
         private static Regex _regexSessionRecord = new Regex(
-            @"^ +(?<Time>\d+:\d+) (InitGame:.+?\\mapname\\(?<Map>.+?)\\.+?\\g_gametype\\(?<GameType>\d)|ClientUserinfoChanged:.{3}n\\(?<Name>.+?)\\.+/(?<Team>.+?)\\|Kill:( \d+){3}: (?<Killer>.+?) killed (?<Victim>.+?) by MOD_(?<Weapon>.+)|ShutdownGame:)",
+            @"^ +(?<Time>\d+:\d+) (InitGame:.+?\\mapname\\(?<Map>.+?)\\.+?\\g_gametype\\(?<GameType>\d)|ClientUserinfoChanged:.{3}n\\(?<Name>.+?)\\.+?model\\.+?(/(?<Team>.+?))*\\|Kill:( \d+){3}: (?<Killer>.+?) killed (?<Victim>.+?) by MOD_(?<Weapon>.+)|ShutdownGame:)",
             RegexOptions.ExplicitCapture | RegexOptions.Compiled);
 
 #endregion

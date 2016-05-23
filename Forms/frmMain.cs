@@ -43,18 +43,28 @@ namespace Q3LogAnalyzer.Forms
 
         private void ProcessCommandLineParams()
         {
+            bool copyLogLocally = false;
+            string logFile = string.Empty;
             string[] args = Environment.GetCommandLineArgs();
             for (int i = 1; i < args.Length; i++)
             {
                 string arg = args[i].ToLower();
                 switch (arg)
                 {
-                    
+                    case "-c":
+                        copyLogLocally = true;
+                        break;
+                    case "-f":
+                        if (++i < args.Length) logFile = args[i];
+                        break;
                 }
             }
-            if (args.Length > 1)
+
+            if (LoadLogFile(logFile) && copyLogLocally)
             {
-                LoadLogFile(args[1]);
+                string destFileName = Path.GetFileName(logFile);
+                string destFilePath = Path.Combine(Application.StartupPath, destFileName);
+                File.Copy(logFile, destFilePath, true);
             }
         }
 
@@ -281,9 +291,12 @@ namespace Q3LogAnalyzer.Forms
             Cursor = Cursors.Default;
         }
 
-        private void LoadLogFile(string logFileName)
+        private bool LoadLogFile(string logFileName)
         {
-            if (!File.Exists(logFileName)) return;
+            if (string.IsNullOrEmpty(logFileName) || !File.Exists(logFileName))
+            {
+                return false;
+            }
 
             Cursor = Cursors.WaitCursor;
 
@@ -297,6 +310,8 @@ namespace Q3LogAnalyzer.Forms
             slLoadingTime.Text = string.Format("Loaded at {0} msec", loadedAt.ToString("0.000"));
 
             Cursor = Cursors.Default;
+
+            return true;
         }
 
         private void BtnLogOpenClick(object sender, EventArgs e)
