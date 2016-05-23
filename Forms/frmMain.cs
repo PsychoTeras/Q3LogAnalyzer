@@ -56,7 +56,7 @@ namespace Q3LogAnalyzer.Forms
                 }
             }
 
-            if (!string.IsNullOrEmpty(logFile) && File.Exists(logFile))
+            if (!string.IsNullOrEmpty(logFile))
             {
                 using (new frmLoading())
                 {
