@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -17,6 +18,10 @@ namespace Q3LogAnalyzer.Forms
         private const string TextTotal = "TOTAL";
 
         private string _currentPath;
+        private string _currentLogFile;
+        private bool _startGameFirst;
+        private bool _copyLogLocally;
+
         private SessionList _sessions;
         private Dictionary<ListView, ColumnSorter> _lvColumnSorters;
 
@@ -37,10 +42,8 @@ namespace Q3LogAnalyzer.Forms
             InitializeApplication();
         }
 
-        private void ProcessCommandLineParams()
+        private void ParseCommandLineParams()
         {
-            bool copyLogLocally = false;
-            string logFile = string.Empty;
             string[] args = Environment.GetCommandLineArgs();
             for (int i = 1; i < args.Length; i++)
             {
@@ -48,23 +51,43 @@ namespace Q3LogAnalyzer.Forms
                 switch (arg)
                 {
                     case "-c":
-                        copyLogLocally = true;
+                        _copyLogLocally = true;
+                        break;
+                    case "-g":
+                        _startGameFirst = true;
                         break;
                     case "-f":
-                        if (++i < args.Length) logFile = args[i];
+                        if (++i < args.Length) _currentLogFile = args[i];
                         break;
                 }
             }
+        }
 
-            if (!string.IsNullOrEmpty(logFile))
+        private void RunGame()
+        {
+            if (File.Exists("quake3.exe"))
+            {
+                Process gamePrc = Process.Start("quake3.exe");
+                if (gamePrc != null) gamePrc.WaitForExit();
+            }
+        }
+
+        private void ProcessStartParams()
+        {
+            if (_startGameFirst)
+            {
+                RunGame();
+            }
+
+            if (!string.IsNullOrEmpty(_currentLogFile))
             {
                 using (new frmLoading())
                 {
-                    if (LoadLogFile(logFile) && copyLogLocally)
+                    if (LoadLogFile(_currentLogFile) && _copyLogLocally)
                     {
-                        string destFileName = Path.GetFileName(logFile);
+                        string destFileName = Path.GetFileName(_currentLogFile);
                         string destFilePath = Path.Combine(Application.StartupPath, destFileName);
-                        File.Copy(logFile, destFilePath, true);
+                        File.Copy(_currentLogFile, destFilePath, true);
                     }
                 }
                 Helper.BringWindowToFront(Handle);
@@ -90,7 +113,9 @@ namespace Q3LogAnalyzer.Forms
 
             ListViewColumnClick(lvStatistic, new ColumnClickEventArgs(1));
 
-            ProcessCommandLineParams();
+            ParseCommandLineParams();
+
+            ProcessStartParams();
         }
 
         private void LockUpdate()
@@ -311,6 +336,8 @@ namespace Q3LogAnalyzer.Forms
             double loadedAt = timer.StopWatch();
             slFileName.Text = string.Format("File: {0}", logFileName);
             slLoadingTime.Text = string.Format("Loaded at {0} msec", loadedAt.ToString("0.000"));
+            
+            _currentLogFile = logFileName;
 
             Cursor = Cursors.Default;
 
@@ -701,6 +728,11 @@ namespace Q3LogAnalyzer.Forms
         private void BtnColorizeStatisticCheckedChanged(object sender, EventArgs e)
         {
             lvStatistic.Invalidate(false);
+        }
+
+        private void BtnRunGameClick(object sender, EventArgs e)
+        {
+            ProcessStartParams();
         }
     }
 }

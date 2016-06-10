@@ -32,8 +32,8 @@ namespace Q3LogAnalyzer.Forms
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
-            Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings gridSettings1 = new Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings();
-            Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings gridSettings2 = new Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings();
+            Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings gridSettings3 = new Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings();
+            Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings gridSettings4 = new Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings();
             this.tsMain = new System.Windows.Forms.ToolStrip();
             this.btnLogOpen = new System.Windows.Forms.ToolStripButton();
             this.btnExport = new System.Windows.Forms.ToolStripButton();
@@ -44,17 +44,6 @@ namespace Q3LogAnalyzer.Forms
             this.tcMain = new System.Windows.Forms.TabControl();
             this.tpStatistic = new System.Windows.Forms.TabPage();
             this.scStatistic = new System.Windows.Forms.SplitContainer();
-            this.pGraph = new System.Windows.Forms.Panel();
-            this.tpDetailed = new System.Windows.Forms.TabPage();
-            this.lvDetailed = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ssMain = new System.Windows.Forms.StatusStrip();
-            this.slFileName = new System.Windows.Forms.ToolStripStatusLabel();
-            this.slLoadingTime = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.btnColorizeStatistics = new Q3LogAnalyzer.Controls.ControlCheckBox();
-            this.btnCollapsAll = new Q3LogAnalyzer.Controls.ControlButton();
-            this.btnExpandAll = new Q3LogAnalyzer.Controls.ControlButton();
             this.lvStatistic = new Q3LogAnalyzer.Controls.ListViewEx();
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -66,8 +55,20 @@ namespace Q3LogAnalyzer.Forms
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.pGraph = new System.Windows.Forms.Panel();
             this.legendControl = new Q3LogAnalyzer.Controls.GraphLib.LegendControl();
             this.graphViewer = new Q3LogAnalyzer.Controls.GraphLib.InteractiveGraphViewer();
+            this.tpDetailed = new System.Windows.Forms.TabPage();
+            this.lvDetailed = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ssMain = new System.Windows.Forms.StatusStrip();
+            this.slFileName = new System.Windows.Forms.ToolStripStatusLabel();
+            this.slLoadingTime = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.btnColorizeStatistics = new Q3LogAnalyzer.Controls.ControlCheckBox();
+            this.btnCollapsAll = new Q3LogAnalyzer.Controls.ControlButton();
+            this.btnExpandAll = new Q3LogAnalyzer.Controls.ControlButton();
+            this.btnRunGame = new System.Windows.Forms.ToolStripButton();
             this.tsMain.SuspendLayout();
             this.tcMain.SuspendLayout();
             this.tpStatistic.SuspendLayout();
@@ -86,7 +87,8 @@ namespace Q3LogAnalyzer.Forms
             this.btnExport,
             this.toolStripSeparator1,
             this.btnFilterEmptyRecords,
-            this.btnFilterLast50Games});
+            this.btnFilterLast50Games,
+            this.btnRunGame});
             this.tsMain.Location = new System.Drawing.Point(0, 0);
             this.tsMain.Name = "tsMain";
             this.tsMain.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
@@ -196,105 +198,6 @@ namespace Q3LogAnalyzer.Forms
             this.scStatistic.TabIndex = 3;
             this.scStatistic.TabStop = false;
             // 
-            // pGraph
-            // 
-            this.pGraph.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pGraph.Controls.Add(this.legendControl);
-            this.pGraph.Controls.Add(this.graphViewer);
-            this.pGraph.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pGraph.Location = new System.Drawing.Point(0, 0);
-            this.pGraph.Name = "pGraph";
-            this.pGraph.Size = new System.Drawing.Size(675, 172);
-            this.pGraph.TabIndex = 0;
-            // 
-            // tpDetailed
-            // 
-            this.tpDetailed.Controls.Add(this.lvDetailed);
-            this.tpDetailed.Location = new System.Drawing.Point(4, 24);
-            this.tpDetailed.Name = "tpDetailed";
-            this.tpDetailed.Padding = new System.Windows.Forms.Padding(3);
-            this.tpDetailed.Size = new System.Drawing.Size(681, 515);
-            this.tpDetailed.TabIndex = 0;
-            this.tpDetailed.Text = "Detailed";
-            this.tpDetailed.UseVisualStyleBackColor = true;
-            // 
-            // lvDetailed
-            // 
-            this.lvDetailed.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1});
-            this.lvDetailed.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvDetailed.FullRowSelect = true;
-            this.lvDetailed.Location = new System.Drawing.Point(3, 3);
-            this.lvDetailed.MultiSelect = false;
-            this.lvDetailed.Name = "lvDetailed";
-            this.lvDetailed.Size = new System.Drawing.Size(675, 511);
-            this.lvDetailed.TabIndex = 1;
-            this.lvDetailed.UseCompatibleStateImageBehavior = false;
-            this.lvDetailed.View = System.Windows.Forms.View.Details;
-            this.lvDetailed.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.ListViewColumnClick);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Detailed statistic";
-            this.columnHeader1.Width = 492;
-            // 
-            // ssMain
-            // 
-            this.ssMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.slFileName,
-            this.slLoadingTime});
-            this.ssMain.Location = new System.Drawing.Point(0, 595);
-            this.ssMain.Name = "ssMain";
-            this.ssMain.Size = new System.Drawing.Size(713, 22);
-            this.ssMain.TabIndex = 7;
-            // 
-            // slFileName
-            // 
-            this.slFileName.Name = "slFileName";
-            this.slFileName.Size = new System.Drawing.Size(0, 17);
-            // 
-            // slLoadingTime
-            // 
-            this.slLoadingTime.Name = "slLoadingTime";
-            this.slLoadingTime.Size = new System.Drawing.Size(0, 17);
-            // 
-            // btnColorizeStatistics
-            // 
-            this.btnColorizeStatistics.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnColorizeStatistics.Appearance = System.Windows.Forms.Appearance.Button;
-            this.btnColorizeStatistics.Image = ((System.Drawing.Image)(resources.GetObject("btnColorizeStatistics.Image")));
-            this.btnColorizeStatistics.Location = new System.Drawing.Point(637, 41);
-            this.btnColorizeStatistics.Name = "btnColorizeStatistics";
-            this.btnColorizeStatistics.Size = new System.Drawing.Size(21, 21);
-            this.btnColorizeStatistics.TabIndex = 8;
-            this.toolTip.SetToolTip(this.btnColorizeStatistics, "Colorize statistics");
-            this.btnColorizeStatistics.UseVisualStyleBackColor = true;
-            this.btnColorizeStatistics.CheckedChanged += new System.EventHandler(this.BtnColorizeStatisticCheckedChanged);
-            // 
-            // btnCollapsAll
-            // 
-            this.btnCollapsAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCollapsAll.Image = ((System.Drawing.Image)(resources.GetObject("btnCollapsAll.Image")));
-            this.btnCollapsAll.Location = new System.Drawing.Point(679, 41);
-            this.btnCollapsAll.Name = "btnCollapsAll";
-            this.btnCollapsAll.Size = new System.Drawing.Size(21, 21);
-            this.btnCollapsAll.TabIndex = 5;
-            this.toolTip.SetToolTip(this.btnCollapsAll, "Collapse all");
-            this.btnCollapsAll.UseVisualStyleBackColor = true;
-            this.btnCollapsAll.Click += new System.EventHandler(this.BtnCollapsAllClick);
-            // 
-            // btnExpandAll
-            // 
-            this.btnExpandAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExpandAll.Image = ((System.Drawing.Image)(resources.GetObject("btnExpandAll.Image")));
-            this.btnExpandAll.Location = new System.Drawing.Point(658, 41);
-            this.btnExpandAll.Name = "btnExpandAll";
-            this.btnExpandAll.Size = new System.Drawing.Size(21, 21);
-            this.btnExpandAll.TabIndex = 6;
-            this.toolTip.SetToolTip(this.btnExpandAll, "Expand all");
-            this.btnExpandAll.UseVisualStyleBackColor = true;
-            this.btnExpandAll.Click += new System.EventHandler(this.BtnExpandAllClick);
-            // 
             // lvStatistic
             // 
             this.lvStatistic.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -376,6 +279,17 @@ namespace Q3LogAnalyzer.Forms
             this.columnHeader9.Tag = "2";
             this.columnHeader9.Text = "Efficiency";
             // 
+            // pGraph
+            // 
+            this.pGraph.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pGraph.Controls.Add(this.legendControl);
+            this.pGraph.Controls.Add(this.graphViewer);
+            this.pGraph.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pGraph.Location = new System.Drawing.Point(0, 0);
+            this.pGraph.Name = "pGraph";
+            this.pGraph.Size = new System.Drawing.Size(675, 172);
+            this.pGraph.TabIndex = 0;
+            // 
             // legendControl
             // 
             this.legendControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -400,22 +314,121 @@ namespace Q3LogAnalyzer.Forms
             this.graphViewer.Name = "graphViewer";
             this.graphViewer.Size = new System.Drawing.Size(673, 170);
             this.graphViewer.TabIndex = 0;
-            gridSettings1.LineColor = System.Drawing.Color.LightGray;
-            gridSettings1.ProportionalToTransformedScale = true;
-            gridSettings1.ShowGridLines = true;
-            gridSettings1.ShowLabels = true;
-            gridSettings1.TransformLabelValues = true;
-            this.graphViewer.XGrid = gridSettings1;
-            gridSettings2.LineColor = System.Drawing.Color.LightGray;
-            gridSettings2.ProportionalToTransformedScale = true;
-            gridSettings2.ShowGridLines = true;
-            gridSettings2.ShowLabels = true;
-            gridSettings2.TransformLabelValues = true;
-            this.graphViewer.YGrid = gridSettings2;
+            gridSettings3.LineColor = System.Drawing.Color.LightGray;
+            gridSettings3.ProportionalToTransformedScale = true;
+            gridSettings3.ShowGridLines = true;
+            gridSettings3.ShowLabels = true;
+            gridSettings3.TransformLabelValues = true;
+            this.graphViewer.XGrid = gridSettings3;
+            gridSettings4.LineColor = System.Drawing.Color.LightGray;
+            gridSettings4.ProportionalToTransformedScale = true;
+            gridSettings4.ShowGridLines = true;
+            gridSettings4.ShowLabels = true;
+            gridSettings4.TransformLabelValues = true;
+            this.graphViewer.YGrid = gridSettings4;
             this.graphViewer.MouseMove += new Q3LogAnalyzer.Controls.GraphLib.GraphMouseEventHandler(this.GraphViewerMouseMove);
             this.graphViewer.FormatXValue += new Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.LabelFormatter(this.GraphViewerFormatXValue);
             this.graphViewer.FormatYValue += new Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.LabelFormatter(this.GraphViewerFormatYValue);
             this.graphViewer.MouseLeave += new System.EventHandler(this.GraphViewerMouseLeave);
+            // 
+            // tpDetailed
+            // 
+            this.tpDetailed.Controls.Add(this.lvDetailed);
+            this.tpDetailed.Location = new System.Drawing.Point(4, 24);
+            this.tpDetailed.Name = "tpDetailed";
+            this.tpDetailed.Padding = new System.Windows.Forms.Padding(3);
+            this.tpDetailed.Size = new System.Drawing.Size(681, 515);
+            this.tpDetailed.TabIndex = 0;
+            this.tpDetailed.Text = "Detailed";
+            this.tpDetailed.UseVisualStyleBackColor = true;
+            // 
+            // lvDetailed
+            // 
+            this.lvDetailed.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1});
+            this.lvDetailed.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lvDetailed.FullRowSelect = true;
+            this.lvDetailed.Location = new System.Drawing.Point(3, 3);
+            this.lvDetailed.MultiSelect = false;
+            this.lvDetailed.Name = "lvDetailed";
+            this.lvDetailed.Size = new System.Drawing.Size(675, 509);
+            this.lvDetailed.TabIndex = 1;
+            this.lvDetailed.UseCompatibleStateImageBehavior = false;
+            this.lvDetailed.View = System.Windows.Forms.View.Details;
+            this.lvDetailed.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.ListViewColumnClick);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Detailed statistic";
+            this.columnHeader1.Width = 492;
+            // 
+            // ssMain
+            // 
+            this.ssMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.slFileName,
+            this.slLoadingTime});
+            this.ssMain.Location = new System.Drawing.Point(0, 595);
+            this.ssMain.Name = "ssMain";
+            this.ssMain.Size = new System.Drawing.Size(713, 22);
+            this.ssMain.TabIndex = 7;
+            // 
+            // slFileName
+            // 
+            this.slFileName.Name = "slFileName";
+            this.slFileName.Size = new System.Drawing.Size(0, 17);
+            // 
+            // slLoadingTime
+            // 
+            this.slLoadingTime.Name = "slLoadingTime";
+            this.slLoadingTime.Size = new System.Drawing.Size(0, 17);
+            // 
+            // btnColorizeStatistics
+            // 
+            this.btnColorizeStatistics.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnColorizeStatistics.Appearance = System.Windows.Forms.Appearance.Button;
+            this.btnColorizeStatistics.Image = ((System.Drawing.Image)(resources.GetObject("btnColorizeStatistics.Image")));
+            this.btnColorizeStatistics.Location = new System.Drawing.Point(637, 41);
+            this.btnColorizeStatistics.Name = "btnColorizeStatistics";
+            this.btnColorizeStatistics.Size = new System.Drawing.Size(21, 21);
+            this.btnColorizeStatistics.TabIndex = 8;
+            this.toolTip.SetToolTip(this.btnColorizeStatistics, "Colorize statistics");
+            this.btnColorizeStatistics.UseVisualStyleBackColor = true;
+            this.btnColorizeStatistics.CheckedChanged += new System.EventHandler(this.BtnColorizeStatisticCheckedChanged);
+            // 
+            // btnCollapsAll
+            // 
+            this.btnCollapsAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCollapsAll.Image = ((System.Drawing.Image)(resources.GetObject("btnCollapsAll.Image")));
+            this.btnCollapsAll.Location = new System.Drawing.Point(679, 41);
+            this.btnCollapsAll.Name = "btnCollapsAll";
+            this.btnCollapsAll.Size = new System.Drawing.Size(21, 21);
+            this.btnCollapsAll.TabIndex = 5;
+            this.toolTip.SetToolTip(this.btnCollapsAll, "Collapse all");
+            this.btnCollapsAll.UseVisualStyleBackColor = true;
+            this.btnCollapsAll.Click += new System.EventHandler(this.BtnCollapsAllClick);
+            // 
+            // btnExpandAll
+            // 
+            this.btnExpandAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnExpandAll.Image = ((System.Drawing.Image)(resources.GetObject("btnExpandAll.Image")));
+            this.btnExpandAll.Location = new System.Drawing.Point(658, 41);
+            this.btnExpandAll.Name = "btnExpandAll";
+            this.btnExpandAll.Size = new System.Drawing.Size(21, 21);
+            this.btnExpandAll.TabIndex = 6;
+            this.toolTip.SetToolTip(this.btnExpandAll, "Expand all");
+            this.btnExpandAll.UseVisualStyleBackColor = true;
+            this.btnExpandAll.Click += new System.EventHandler(this.BtnExpandAllClick);
+            // 
+            // btnRunGame
+            // 
+            this.btnRunGame.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnRunGame.Image = ((System.Drawing.Image)(resources.GetObject("btnRunGame.Image")));
+            this.btnRunGame.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnRunGame.Name = "btnRunGame";
+            this.btnRunGame.Size = new System.Drawing.Size(65, 35);
+            this.btnRunGame.Text = "Run game";
+            this.btnRunGame.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnRunGame.Click += new System.EventHandler(this.BtnRunGameClick);
             // 
             // frmMain
             // 
@@ -487,6 +500,7 @@ namespace Q3LogAnalyzer.Forms
         private System.Windows.Forms.ToolStripButton btnFilterEmptyRecords;
         private ControlCheckBox btnColorizeStatistics;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.ToolStripButton btnRunGame;
     }
 }
 
