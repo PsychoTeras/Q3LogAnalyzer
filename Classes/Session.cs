@@ -144,7 +144,7 @@ namespace Q3LogAnalyzer.Classes
 
         public TeamStatistics CalculateTeamStatistics(IEnumerable<Statistics> playersStatistics)
         {
-            return TeamStatistics.Calculate(Teams, playersStatistics);
+            return TeamStatistics.Calculate(Map, Players, Teams, playersStatistics);
         }
 
         public override string ToString()

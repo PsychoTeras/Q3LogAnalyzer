@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -19,7 +18,6 @@ namespace Q3LogAnalyzer.Forms
 
         private string _currentPath;
         private string _currentLogFile;
-        private bool _startGameFirst;
         private bool _copyLogLocally;
 
         private SessionList _sessions;
@@ -53,9 +51,6 @@ namespace Q3LogAnalyzer.Forms
                     case "-c":
                         _copyLogLocally = true;
                         break;
-                    case "-g":
-                        _startGameFirst = true;
-                        break;
                     case "-f":
                         if (++i < args.Length) _currentLogFile = args[i];
                         break;
@@ -63,22 +58,8 @@ namespace Q3LogAnalyzer.Forms
             }
         }
 
-        private void RunGame()
-        {
-            if (File.Exists("quake3.exe"))
-            {
-                Process gamePrc = Process.Start("quake3.exe");
-                if (gamePrc != null) gamePrc.WaitForExit();
-            }
-        }
-
         private void ProcessStartParams()
         {
-            if (_startGameFirst)
-            {
-                RunGame();
-            }
-
             if (!string.IsNullOrEmpty(_currentLogFile))
             {
                 using (new frmLoading())
@@ -122,12 +103,14 @@ namespace Q3LogAnalyzer.Forms
         {
             lvStatistic.BeginUpdate();
             lvDetailed.BeginUpdate();
+            lvSummary.BeginUpdate();
         }
 
         private void UnlockUpdate()
         {
             lvStatistic.EndUpdate();
             lvDetailed.EndUpdate();
+            lvSummary.EndUpdate();
         }
 
         private void FillDetailedListView(TimeSpan startTime, IEnumerable<string> groupNames, 
@@ -212,8 +195,12 @@ namespace Q3LogAnalyzer.Forms
             //Clear all data. lvLogs.Items.Clear() will clear content only without columns
             lvStatistic.Items.Clear();
             lvStatistic.Groups.Clear();
+
             lvDetailed.Clear();
             lvDetailed.Groups.Clear();
+
+            lvSummary.Items.Clear();
+            lvSummary.Groups.Clear();
 
             //Recreate colums
             IEnumerable<string> groupNames = RecordList.Groups;
@@ -226,13 +213,15 @@ namespace Q3LogAnalyzer.Forms
             }
             lvDetailed.Columns.AddRange(headers.ToArray());
 
-            List<ListViewGroup> groupsStatistic = new List<ListViewGroup>(_sessions.Count);
-            List<ListViewGroup> groupsDetailed = new List<ListViewGroup>(_sessions.Count);
+            int processedSessionsCount = 0,
+                sessionsCount = btnFilterLast50Games.Checked
+                    ? Math.Min(_sessions.Count, 50)
+                    : _sessions.Count,
+                sessionIdx = sessionsCount;
 
-            int count = 0;
-            int sessionIdx = btnFilterLast50Games.Checked
-                ? Math.Min(_sessions.Count, 50)
-                : _sessions.Count;
+            List<ListViewGroup> groupsStatistic = new List<ListViewGroup>(sessionIdx);
+            List<ListViewGroup> groupsDetailed = new List<ListViewGroup>(sessionIdx);
+            List<TeamStatistics> sessionsTeamStatistics = new List<TeamStatistics>(sessionIdx);
 
             foreach (Session session in _sessions)
             {
@@ -252,6 +241,7 @@ namespace Q3LogAnalyzer.Forms
                     }
                     if (ignoreSession) continue;
                 }
+
 
                 //Fill sessions statistics
                 ListViewGroup groupStatistic = new ListViewGroup { Tag = session };
@@ -286,29 +276,58 @@ namespace Q3LogAnalyzer.Forms
                         if (teamStatistics.IsCompletedSession)
                         {
                             sessionHeader = string.Format("{0} {1}", sessionHeader, teamStatistics);
+                            sessionsTeamStatistics.Add(teamStatistics);
                         }
                         break;
                     }
                 }
                 groupStatistic.Header = groupDetailed.Header = sessionHeader;
 
-                if (btnFilterLast50Games.Checked && ++count == 50) break;
+                if (btnFilterLast50Games.Checked && ++processedSessionsCount == 50) break;
+            }
+
+            List<ListViewItem> itemsSummary = new List<ListViewItem>(sessionIdx);
+            IEnumerable<string> maps = sessionsTeamStatistics.Select(s => s.Map).Distinct();
+            foreach (string m in maps)
+            {
+                string map = m;
+                IEnumerable<TeamStatistics> mapTeamStatistics = sessionsTeamStatistics.Where(s => s.Map == map && s.Players.Count == 4);
+                IEnumerable<TeamStatistics> redWinners = mapTeamStatistics.Where(s => s.WinnerTeam == Team.red);
+                int redWinsNum = redWinners.Count();
+                IEnumerable<TeamStatistics> blueWinners = mapTeamStatistics.Where(s => s.WinnerTeam == Team.blue);
+                int blueWinsNum = blueWinners.Count();
+                ListViewItem item = new ListViewItem(map);
+                item.SubItems.Add(redWinsNum.ToString());
+                item.SubItems.Add(blueWinsNum.ToString());
+                item.SubItems.Add(redWinsNum > blueWinsNum ? "RED" : redWinsNum < blueWinsNum ? "BLUE" : "DRAW");
+                float rate = redWinsNum > blueWinsNum
+                    ? (blueWinsNum == 0 ? 1 : (float) blueWinsNum/redWinsNum)
+                    : redWinsNum < blueWinsNum
+                        ? (redWinsNum == 0 ? 1 : (float) redWinsNum/blueWinsNum)
+                        : 0f;
+                item.SubItems.Add(redWinsNum == blueWinsNum ? TextNoValue : rate.ToString("0.##"));
+                itemsSummary.Add(item);
             }
 
             lvStatistic.Groups.AddRange(groupsStatistic.ToArray());
             lvDetailed.Groups.AddRange(groupsDetailed.ToArray());
+            lvSummary.Items.AddRange(itemsSummary.ToArray());
 
             //Prepare columns
             lvStatistic.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
             lvStatistic.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
             lvStatistic.Columns[lvStatistic.Columns.Count - 1].Width = 65;
+            lvStatistic.Sort();
 
             lvDetailed.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
             lvDetailed.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
             lvDetailed.Columns[lvDetailed.Columns.Count - 1].Width = 160;
-
             lvDetailed.Sort();
-            lvStatistic.Sort();
+
+            lvSummary.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            lvSummary.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            lvSummary.Columns[lvSummary.Columns.Count - 1].Width = 160;
+            lvSummary.Sort();
 
             CollapseAll(true);
 
@@ -728,11 +747,6 @@ namespace Q3LogAnalyzer.Forms
         private void BtnColorizeStatisticCheckedChanged(object sender, EventArgs e)
         {
             lvStatistic.Invalidate(false);
-        }
-
-        private void BtnRunGameClick(object sender, EventArgs e)
-        {
-            ProcessStartParams();
         }
     }
 }

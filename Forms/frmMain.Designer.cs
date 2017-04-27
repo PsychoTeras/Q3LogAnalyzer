@@ -32,8 +32,8 @@ namespace Q3LogAnalyzer.Forms
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
-            Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings gridSettings3 = new Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings();
-            Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings gridSettings4 = new Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings();
+            Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings gridSettings1 = new Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings();
+            Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings gridSettings2 = new Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.GridSettings();
             this.tsMain = new System.Windows.Forms.ToolStrip();
             this.btnLogOpen = new System.Windows.Forms.ToolStripButton();
             this.btnExport = new System.Windows.Forms.ToolStripButton();
@@ -61,6 +61,13 @@ namespace Q3LogAnalyzer.Forms
             this.tpDetailed = new System.Windows.Forms.TabPage();
             this.lvDetailed = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tpSummary = new System.Windows.Forms.TabPage();
+            this.lvSummary = new System.Windows.Forms.ListView();
+            this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader15 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader16 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ssMain = new System.Windows.Forms.StatusStrip();
             this.slFileName = new System.Windows.Forms.ToolStripStatusLabel();
             this.slLoadingTime = new System.Windows.Forms.ToolStripStatusLabel();
@@ -68,7 +75,6 @@ namespace Q3LogAnalyzer.Forms
             this.btnColorizeStatistics = new Q3LogAnalyzer.Controls.ControlCheckBox();
             this.btnCollapsAll = new Q3LogAnalyzer.Controls.ControlButton();
             this.btnExpandAll = new Q3LogAnalyzer.Controls.ControlButton();
-            this.btnRunGame = new System.Windows.Forms.ToolStripButton();
             this.tsMain.SuspendLayout();
             this.tcMain.SuspendLayout();
             this.tpStatistic.SuspendLayout();
@@ -77,6 +83,7 @@ namespace Q3LogAnalyzer.Forms
             this.scStatistic.SuspendLayout();
             this.pGraph.SuspendLayout();
             this.tpDetailed.SuspendLayout();
+            this.tpSummary.SuspendLayout();
             this.ssMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -87,8 +94,7 @@ namespace Q3LogAnalyzer.Forms
             this.btnExport,
             this.toolStripSeparator1,
             this.btnFilterEmptyRecords,
-            this.btnFilterLast50Games,
-            this.btnRunGame});
+            this.btnFilterLast50Games});
             this.tsMain.Location = new System.Drawing.Point(0, 0);
             this.tsMain.Name = "tsMain";
             this.tsMain.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
@@ -160,6 +166,7 @@ namespace Q3LogAnalyzer.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcMain.Controls.Add(this.tpStatistic);
             this.tcMain.Controls.Add(this.tpDetailed);
+            this.tcMain.Controls.Add(this.tpSummary);
             this.tcMain.Location = new System.Drawing.Point(12, 41);
             this.tcMain.Name = "tcMain";
             this.tcMain.SelectedIndex = 0;
@@ -314,18 +321,18 @@ namespace Q3LogAnalyzer.Forms
             this.graphViewer.Name = "graphViewer";
             this.graphViewer.Size = new System.Drawing.Size(673, 170);
             this.graphViewer.TabIndex = 0;
-            gridSettings3.LineColor = System.Drawing.Color.LightGray;
-            gridSettings3.ProportionalToTransformedScale = true;
-            gridSettings3.ShowGridLines = true;
-            gridSettings3.ShowLabels = true;
-            gridSettings3.TransformLabelValues = true;
-            this.graphViewer.XGrid = gridSettings3;
-            gridSettings4.LineColor = System.Drawing.Color.LightGray;
-            gridSettings4.ProportionalToTransformedScale = true;
-            gridSettings4.ShowGridLines = true;
-            gridSettings4.ShowLabels = true;
-            gridSettings4.TransformLabelValues = true;
-            this.graphViewer.YGrid = gridSettings4;
+            gridSettings1.LineColor = System.Drawing.Color.LightGray;
+            gridSettings1.ProportionalToTransformedScale = true;
+            gridSettings1.ShowGridLines = true;
+            gridSettings1.ShowLabels = true;
+            gridSettings1.TransformLabelValues = true;
+            this.graphViewer.XGrid = gridSettings1;
+            gridSettings2.LineColor = System.Drawing.Color.LightGray;
+            gridSettings2.ProportionalToTransformedScale = true;
+            gridSettings2.ShowGridLines = true;
+            gridSettings2.ShowLabels = true;
+            gridSettings2.TransformLabelValues = true;
+            this.graphViewer.YGrid = gridSettings2;
             this.graphViewer.MouseMove += new Q3LogAnalyzer.Controls.GraphLib.GraphMouseEventHandler(this.GraphViewerMouseMove);
             this.graphViewer.FormatXValue += new Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.LabelFormatter(this.GraphViewerFormatXValue);
             this.graphViewer.FormatYValue += new Q3LogAnalyzer.Controls.GraphLib.ScaledViewerBase.LabelFormatter(this.GraphViewerFormatYValue);
@@ -361,6 +368,60 @@ namespace Q3LogAnalyzer.Forms
             // 
             this.columnHeader1.Text = "Detailed statistic";
             this.columnHeader1.Width = 492;
+            // 
+            // tpSummary
+            // 
+            this.tpSummary.Controls.Add(this.lvSummary);
+            this.tpSummary.Location = new System.Drawing.Point(4, 24);
+            this.tpSummary.Name = "tpSummary";
+            this.tpSummary.Padding = new System.Windows.Forms.Padding(3);
+            this.tpSummary.Size = new System.Drawing.Size(681, 515);
+            this.tpSummary.TabIndex = 2;
+            this.tpSummary.Text = "Summary";
+            this.tpSummary.UseVisualStyleBackColor = true;
+            // 
+            // lvSummary
+            // 
+            this.lvSummary.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader12,
+            this.columnHeader13,
+            this.columnHeader14,
+            this.columnHeader15,
+            this.columnHeader16});
+            this.lvSummary.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lvSummary.FullRowSelect = true;
+            this.lvSummary.Location = new System.Drawing.Point(3, 3);
+            this.lvSummary.MultiSelect = false;
+            this.lvSummary.Name = "lvSummary";
+            this.lvSummary.Size = new System.Drawing.Size(675, 509);
+            this.lvSummary.TabIndex = 2;
+            this.lvSummary.UseCompatibleStateImageBehavior = false;
+            this.lvSummary.View = System.Windows.Forms.View.Details;
+            this.lvSummary.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.ListViewColumnClick);
+            // 
+            // columnHeader12
+            // 
+            this.columnHeader12.Text = "Map";
+            this.columnHeader12.Width = 183;
+            // 
+            // columnHeader13
+            // 
+            this.columnHeader13.Text = "RED team wins";
+            this.columnHeader13.Width = 118;
+            // 
+            // columnHeader14
+            // 
+            this.columnHeader14.Text = "BLUE team wins";
+            this.columnHeader14.Width = 116;
+            // 
+            // columnHeader15
+            // 
+            this.columnHeader15.Text = "Winner";
+            this.columnHeader15.Width = 71;
+            // 
+            // columnHeader16
+            // 
+            this.columnHeader16.Text = "Rate";
             // 
             // ssMain
             // 
@@ -419,17 +480,6 @@ namespace Q3LogAnalyzer.Forms
             this.btnExpandAll.UseVisualStyleBackColor = true;
             this.btnExpandAll.Click += new System.EventHandler(this.BtnExpandAllClick);
             // 
-            // btnRunGame
-            // 
-            this.btnRunGame.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.btnRunGame.Image = ((System.Drawing.Image)(resources.GetObject("btnRunGame.Image")));
-            this.btnRunGame.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnRunGame.Name = "btnRunGame";
-            this.btnRunGame.Size = new System.Drawing.Size(65, 35);
-            this.btnRunGame.Text = "Run game";
-            this.btnRunGame.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnRunGame.Click += new System.EventHandler(this.BtnRunGameClick);
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -457,6 +507,7 @@ namespace Q3LogAnalyzer.Forms
             this.scStatistic.ResumeLayout(false);
             this.pGraph.ResumeLayout(false);
             this.tpDetailed.ResumeLayout(false);
+            this.tpSummary.ResumeLayout(false);
             this.ssMain.ResumeLayout(false);
             this.ssMain.PerformLayout();
             this.ResumeLayout(false);
@@ -500,7 +551,13 @@ namespace Q3LogAnalyzer.Forms
         private System.Windows.Forms.ToolStripButton btnFilterEmptyRecords;
         private ControlCheckBox btnColorizeStatistics;
         private System.Windows.Forms.ToolTip toolTip;
-        private System.Windows.Forms.ToolStripButton btnRunGame;
+        private System.Windows.Forms.TabPage tpSummary;
+        private System.Windows.Forms.ListView lvSummary;
+        private System.Windows.Forms.ColumnHeader columnHeader12;
+        private System.Windows.Forms.ColumnHeader columnHeader13;
+        private System.Windows.Forms.ColumnHeader columnHeader14;
+        private System.Windows.Forms.ColumnHeader columnHeader15;
+        private System.Windows.Forms.ColumnHeader columnHeader16;
     }
 }
 
