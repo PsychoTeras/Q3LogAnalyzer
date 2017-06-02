@@ -13,8 +13,7 @@ namespace Q3LogAnalyzer.Classes
             get { return Scores.Keys.Count > 1 && WinnerTeam != Team.unknown; }
         }
 
-        public string Map { get; private set; }
-        public PlayerList Players { get; private set; }
+        public Session Session { get; private set; }
         public Team WinnerTeam { get; private set; }
         public Dictionary<Team, int> Scores { get; private set; }
 
@@ -22,10 +21,10 @@ namespace Q3LogAnalyzer.Classes
 
 #region Static methods
 
-        public static TeamStatistics Calculate(string map, PlayerList players, IEnumerable<Team> teams, 
+        public static TeamStatistics Calculate(Session session, IEnumerable<Team> teams, 
             IEnumerable<Statistics> playerStatistic)
         {
-            TeamStatistics teamStatistics = new TeamStatistics(map, players);
+            TeamStatistics teamStatistics = new TeamStatistics(session);
             teamStatistics.GetStatistics(teams, playerStatistic);
             return teamStatistics;
         }
@@ -34,10 +33,9 @@ namespace Q3LogAnalyzer.Classes
 
 #region Ctor
 
-        private TeamStatistics(string map, PlayerList players)
+        private TeamStatistics(Session session)
         {
-            Map = map;
-            Players = players;
+            Session = session;
             Scores = new Dictionary<Team, int>();
         }
 

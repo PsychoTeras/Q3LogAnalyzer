@@ -18,21 +18,23 @@ namespace Q3LogAnalyzer.Classes
         public PlayerList Players { get; private set; }
         public RecordList Records { get; private set; }
 
-        public string Duration
+        private TimeSpan? _sDuration;
+        public TimeSpan Duration
         {
             get
             {
-                if (!String.IsNullOrEmpty(StartTime) &&
-                    !String.IsNullOrEmpty(EndTime))
+                if (_sDuration == null)
                 {
-                    TimeSpan tsStart, tsEnd;
-                    if (TimeSpan.TryParse(StartTime, out tsStart) &&
-                        TimeSpan.TryParse(EndTime, out tsEnd))
+                    if (!string.IsNullOrEmpty(StartTime) && !string.IsNullOrEmpty(EndTime))
                     {
-                        return (tsEnd - tsStart).ToString();
+                        TimeSpan tsStart, tsEnd;
+                        if (TimeSpan.TryParse(StartTime, out tsStart) && TimeSpan.TryParse(EndTime, out tsEnd))
+                        {
+                            _sDuration = tsEnd - tsStart;
+                        }
                     }
                 }
-                return null;
+                return _sDuration.GetValueOrDefault();
             }
         } 
 
@@ -144,7 +146,7 @@ namespace Q3LogAnalyzer.Classes
 
         public TeamStatistics CalculateTeamStatistics(IEnumerable<Statistics> playersStatistics)
         {
-            return TeamStatistics.Calculate(Map, Players, Teams, playersStatistics);
+            return TeamStatistics.Calculate(this, Teams, playersStatistics);
         }
 
         public override string ToString()

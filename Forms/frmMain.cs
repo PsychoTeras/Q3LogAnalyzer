@@ -287,11 +287,14 @@ namespace Q3LogAnalyzer.Forms
             }
 
             List<ListViewItem> itemsSummary = new List<ListViewItem>(sessionIdx);
-            IEnumerable<string> maps = sessionsTeamStatistics.Select(s => s.Map).Distinct();
+            IEnumerable<string> maps = sessionsTeamStatistics.Select(s => s.Session).Select(s => s.Map).Distinct();
             foreach (string m in maps)
             {
                 string map = m;
-                IEnumerable<TeamStatistics> mapTeamStatistics = sessionsTeamStatistics.Where(s => s.Map == map && s.Players.Count == 4);
+                IEnumerable<TeamStatistics> mapTeamStatistics = sessionsTeamStatistics.Where
+                    (
+                        s => s.Session.Map == map && s.Session.Players.Count == 4 && s.Session.Duration.Minutes >= 13
+                    );
                 IEnumerable<TeamStatistics> redWinners = mapTeamStatistics.Where(s => s.WinnerTeam == Team.red);
                 int redWinsNum = redWinners.Count();
                 IEnumerable<TeamStatistics> blueWinners = mapTeamStatistics.Where(s => s.WinnerTeam == Team.blue);
