@@ -305,7 +305,7 @@ namespace Q3LogAnalyzer.Controls.GraphLib
                     KeyValuePair<double, double> kv = _Graph.GetPointByIndex(i);
                     if (kv.Key < X)
                         continue;
-                    if (kv.Key == X)
+                    if (Math.Abs(kv.Key - X) < double.Epsilon)
                         return kv.Value;
                     if (i == 0)
                         return double.NaN;   //TODO: support extrapolation

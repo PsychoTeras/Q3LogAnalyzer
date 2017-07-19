@@ -357,7 +357,7 @@ namespace Q3LogAnalyzer.Forms
 
             double loadedAt = timer.StopWatch();
             slFileName.Text = string.Format("File: {0}", logFileName);
-            slLoadingTime.Text = string.Format("Loaded at {0} msec", loadedAt.ToString("0.000"));
+            slLoadingTime.Text = string.Format("Loaded at {0:0.000} msec", loadedAt);
             
             _currentLogFile = logFileName;
 
@@ -571,14 +571,11 @@ namespace Q3LogAnalyzer.Forms
             {
                 //Kills
                 HashSet<Record> teamKills = new HashSet<Record>(records.GetTeamKills(player));
-                IEnumerable<Record> kills = records.GetKills(player).
-                    Where(r => !teamKills.Contains(r));
+                IEnumerable<Record> kills = records.GetKills(player).Where(r => !teamKills.Contains(r));
                 PopulateGraph(startTime, kills, "Kills", Color.DodgerBlue);
 
                 //Deaths
-                HashSet<Record> backstabs = new HashSet<Record>(records.GetBackstabs(player));
-                IEnumerable<Record> deaths = records.GetTotalDeaths(player).
-                    Where(r => !backstabs.Contains(r));
+                IEnumerable<Record> deaths = records.GetTotalDeaths(player);
                 PopulateGraph(startTime, deaths, "Deaths", Color.IndianRed);
             }
 
@@ -647,7 +644,7 @@ namespace Q3LogAnalyzer.Forms
                 GraphViewer.DisplayedGraph.DisplayedPoint point = graphPoint.NearestReferencePoint;
                 GraphViewer.DisplayedGraph graph = graphPoint.Graph;
 
-                string @event = string.Empty, metric = string.Empty;
+                string @event = string.Empty, metric;
                 bool isPrivateStatistic = graph.Tag is IEnumerable<Record>;
                 if (isPrivateStatistic)
                 {
@@ -672,8 +669,8 @@ namespace Q3LogAnalyzer.Forms
                         records[point.Index].Value["Killer"], record.Key == EventType.Kill ? "+" : "-");
                 }
 
-                string hint = string.Format("{3}{1}\n{2} at {0}", SecondsToString(point.X), 
-                                            point.Y, @event, metric);
+                string hint = string.Format("{3}{1}\n{2} at {0}", SecondsToString(point.X),
+                    point.Y, @event, metric);
                 _floatingHint.Show(e, hint);
             }
             else
@@ -703,7 +700,7 @@ namespace Q3LogAnalyzer.Forms
         {
             Rectangle rect;
             bool isSelected = e.Item.Selected;
-            Rectangle r1 = rect = e.Item.GetBounds(ItemBoundsPortion.Label);
+            Rectangle r1 = e.Item.GetBounds(ItemBoundsPortion.Label);
             
             e.DrawBackground();
 
