@@ -20,9 +20,9 @@ namespace Q3LogAnalyzer.Classes
         
         public int TotalScores;
 
-        public float EfficiencyPenalty;
-        public float IntermediateEfficiency;
-        public float Efficiency;
+        public double EfficiencyPenalty;
+        public double IntermediateEfficiency;
+        public double Efficiency;
 
 #endregion
 
@@ -81,7 +81,7 @@ namespace Q3LogAnalyzer.Classes
 
         private void CalculateIntermediateEfficiency()
         {
-            float victimsCoeff = Math.Max(TotalDeathsCount - BackstabsCount, 1);
+            double victimsCoeff = Math.Max(TotalDeathsCount - BackstabsCount, 1);
             IntermediateEfficiency = Math.Max(TotalScores/victimsCoeff, 0);
             EfficiencyPenalty = IntermediateEfficiency/victimsCoeff;
         }
@@ -116,7 +116,7 @@ namespace Q3LogAnalyzer.Classes
                 }
             }
 
-            float penalty = penalties.Keys.Sum
+            double penalty = penalties.Keys.Sum
                 (
                     p => playersStatistics[p].EfficiencyPenalty * penalties[p]
                 );
@@ -124,7 +124,7 @@ namespace Q3LogAnalyzer.Classes
             IntermediateEfficiency = Math.Max(IntermediateEfficiency - penalty, 0);
         }
 
-        public void CalculateFinal(float teamEfficiencySum)
+        public void CalculateFinal(double teamEfficiencySum)
         {
             Efficiency = teamEfficiencySum > 0
                 ? 1/teamEfficiencySum*IntermediateEfficiency

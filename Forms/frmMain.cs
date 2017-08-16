@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Q3LogAnalyzer.Classes;
 using Q3LogAnalyzer.Controls.GraphLib;
 using Q3LogAnalyzer.Helpers;
+// ReSharper disable All
 
 namespace Q3LogAnalyzer.Forms
 {
@@ -104,6 +105,7 @@ namespace Q3LogAnalyzer.Forms
             lvStatistic.BeginUpdate();
             lvDetailed.BeginUpdate();
             lvSummary.BeginUpdate();
+            lvEfficiency.BeginUpdate();
         }
 
         private void UnlockUpdate()
@@ -111,29 +113,7 @@ namespace Q3LogAnalyzer.Forms
             lvStatistic.EndUpdate();
             lvDetailed.EndUpdate();
             lvSummary.EndUpdate();
-        }
-
-        private void FillDetailedListView(TimeSpan startTime, IEnumerable<string> groupNames, 
-            ListViewGroup group, RecordList records)
-        {
-            //Create records
-            IEnumerable<string> subColumnNames = groupNames.Skip(1);
-
-            List<ListViewItem> items = new List<ListViewItem>(records.Count);
-            foreach (Record record in records)
-            {
-                TimeSpan time = TimeSpan.Parse(record.Time) - startTime;
-                string text = SecondsToString(time.TotalSeconds);
-                ListViewItem item = new ListViewItem(text) {Group = group};
-                foreach (string subColumnName in subColumnNames)
-                {
-                    text = record.GetSafe(subColumnName);
-                    item.SubItems.Add(text);
-                }
-                items.Add(item);
-            }
-
-            lvDetailed.Items.AddRange(items.ToArray());
+            lvEfficiency.EndUpdate();
         }
 
         private void FillStatisticListView(ListViewGroup group, Statistics[] statistics, Session session)
@@ -184,6 +164,45 @@ namespace Q3LogAnalyzer.Forms
             lvStatistic.Items.AddRange(items.ToArray());
         }
 
+        private void FillDetailedListView(TimeSpan startTime, IEnumerable<string> groupNames,
+            ListViewGroup group, RecordList records)
+        {
+            //Create records
+            IEnumerable<string> subColumnNames = groupNames.Skip(1);
+
+            List<ListViewItem> items = new List<ListViewItem>(records.Count);
+            foreach (Record record in records)
+            {
+                TimeSpan time = TimeSpan.Parse(record.Time) - startTime;
+                string text = SecondsToString(time.TotalSeconds);
+                ListViewItem item = new ListViewItem(text) { Group = group };
+                foreach (string subColumnName in subColumnNames)
+                {
+                    text = record.GetSafe(subColumnName);
+                    item.SubItems.Add(text);
+                }
+                items.Add(item);
+            }
+
+            lvDetailed.Items.AddRange(items.ToArray());
+        }
+
+        private void FillEfficiencyListView(ListViewGroup group, string map,
+            Dictionary<string, Dictionary<string, PerPlayerEff>> efficiencyPerPlayer)
+        {
+            List<ListViewItem> efficiencyItems = new List<ListViewItem>();
+            Dictionary<string, PerPlayerEff> perPlayerStat = efficiencyPerPlayer[map];
+            foreach (string playerName in perPlayerStat.Keys.OrderBy(s => s))
+            {
+                PerPlayerEff ppEff = perPlayerStat[playerName];
+                ListViewItem item = new ListViewItem(playerName) {Group = group};
+                efficiencyItems.Add(item);
+                item.SubItems.Add(ppEff.CalculateEfficiency().ToString("0.##"));
+                item.SubItems.Add(ppEff.CalculateWeaponsUsing());
+            }
+            lvEfficiency.Items.AddRange(efficiencyItems.ToArray());
+        }
+
         private void ReloadSessions()
         {
             if (_sessions == null) return;
@@ -201,6 +220,9 @@ namespace Q3LogAnalyzer.Forms
 
             lvSummary.Items.Clear();
             lvSummary.Groups.Clear();
+
+            lvEfficiency.Items.Clear();
+            lvEfficiency.Groups.Clear();
 
             //Recreate colums
             IEnumerable<string> groupNames = RecordList.Groups;
@@ -222,6 +244,9 @@ namespace Q3LogAnalyzer.Forms
             List<ListViewGroup> groupsStatistic = new List<ListViewGroup>(sessionIdx);
             List<ListViewGroup> groupsDetailed = new List<ListViewGroup>(sessionIdx);
             List<TeamStatistics> sessionsTeamStatistics = new List<TeamStatistics>(sessionIdx);
+            List<ListViewGroup> groupsEfficiency = new List<ListViewGroup>();
+            Dictionary<string, Dictionary<string, PerPlayerEff>> efficiencyPerPlayer =
+                new Dictionary<string, Dictionary<string, PerPlayerEff>>();
 
             foreach (Session session in _sessions)
             {
@@ -242,9 +267,8 @@ namespace Q3LogAnalyzer.Forms
                     if (ignoreSession) continue;
                 }
 
-
                 //Fill sessions statistics
-                ListViewGroup groupStatistic = new ListViewGroup { Tag = session };
+                ListViewGroup groupStatistic = new ListViewGroup {Tag = session};
                 FillStatisticListView(groupStatistic, statistics, session);
                 if (groupStatistic.Items.Count > 0)
                 {
@@ -253,20 +277,21 @@ namespace Q3LogAnalyzer.Forms
 
                 //Fill detailed sessions statistics
                 TimeSpan startTime = TimeSpan.Parse(session.StartTime);
-                ListViewGroup groupDetailed = new ListViewGroup { Tag = session };
+                ListViewGroup groupDetailed = new ListViewGroup {Tag = session};
                 FillDetailedListView(startTime, groupNames, groupDetailed, session.Records);
                 if (groupDetailed.Items.Count > 0)
                 {
                     groupsDetailed.Add(groupDetailed);
                 }
 
-                //Calculate sessions summary statistics
+                //Calculate all statistics
                 string sessionHeader = string.Format("Session {0}. {1}", sessionIdx--, session);
                 switch (session.GameType)
                 {
                     case GameType.Deathmatch:
                     {
-                        Statistics winner = statistics.First(s => s.TotalScores == statistics.Max(sm => sm.TotalScores));
+                        Statistics winner =
+                            statistics.First(s => s.TotalScores == statistics.Max(sm => sm.TotalScores));
                         sessionHeader = string.Format("{0} Winner: {1}", sessionHeader, winner.Player.Name);
                         break;
                     }
@@ -277,6 +302,50 @@ namespace Q3LogAnalyzer.Forms
                         {
                             sessionHeader = string.Format("{0} {1}", sessionHeader, teamStatistics);
                             sessionsTeamStatistics.Add(teamStatistics);
+
+                            //Calculate player efficiency
+                            foreach (Statistics statistic in statistics)
+                            {
+                                Dictionary<string, PerPlayerEff> perPlayerStat;
+                                if (!efficiencyPerPlayer.TryGetValue(session.Map, out perPlayerStat))
+                                {
+                                    efficiencyPerPlayer.Add(session.Map, perPlayerStat = new Dictionary<string, PerPlayerEff>());
+                                }
+
+                                PerPlayerEff ppEff;
+                                if (!perPlayerStat.TryGetValue(statistic.Player.Name, out ppEff))
+                                {
+                                    perPlayerStat.Add(statistic.Player.Name, ppEff = new PerPlayerEff());
+                                }
+
+                                //Efficiency
+                                ppEff.AcceptEfficiency(statistic.Efficiency);
+
+                                //Weapon
+                                Dictionary<string, string> shortWeaponNames = new Dictionary<string, string>();
+                                IEnumerable<string> weaponsStat = session.Records
+                                    .Where(r => r["Killer"] == statistic.Player.Name &&
+                                                r["Victim"] != statistic.Player.Name)
+                                    .SelectMany(r => r).Where(r => r.Key == "Weapon").Select(r =>
+                                    {
+                                        string weapon;
+                                        if (!shortWeaponNames.TryGetValue(r.Value, out weapon))
+                                        {
+                                            weapon = r.Value;
+                                            int idx_ = weapon.IndexOf("_");
+                                            if (idx_ != -1)
+                                            {
+                                                weapon = weapon.Remove(idx_);
+                                            }
+                                            shortWeaponNames.Add(r.Value, weapon);
+                                        }
+                                        return weapon;
+                                    });
+                                foreach (string weapon in weaponsStat)
+                                {
+                                    ppEff.AcceptWeapon(weapon);
+                                }
+                            }
                         }
                         break;
                     }
@@ -286,15 +355,16 @@ namespace Q3LogAnalyzer.Forms
                 if (btnFilterLast50Games.Checked && ++processedSessionsCount == 50) break;
             }
 
+            //Fill sessions summary statistics
             List<ListViewItem> itemsSummary = new List<ListViewItem>(sessionIdx);
             IEnumerable<string> maps = sessionsTeamStatistics.Select(s => s.Session).Select(s => s.Map).Distinct();
             foreach (string m in maps)
             {
                 string map = m;
                 IEnumerable<TeamStatistics> mapTeamStatistics = sessionsTeamStatistics.Where
-                    (
-                        s => s.Session.Map == map && s.Session.Players.Count == 4 && s.Session.Duration.Minutes >= 13
-                    );
+                (
+                    s => s.Session.Map == map && s.Session.Players.Count == 4 && s.Session.Duration.Minutes >= 13
+                );
                 IEnumerable<TeamStatistics> redWinners = mapTeamStatistics.Where(s => s.WinnerTeam == Team.red);
                 int redWinsNum = redWinners.Count();
                 IEnumerable<TeamStatistics> blueWinners = mapTeamStatistics.Where(s => s.WinnerTeam == Team.blue);
@@ -303,18 +373,30 @@ namespace Q3LogAnalyzer.Forms
                 item.SubItems.Add(redWinsNum.ToString());
                 item.SubItems.Add(blueWinsNum.ToString());
                 item.SubItems.Add(redWinsNum > blueWinsNum ? "RED" : redWinsNum < blueWinsNum ? "BLUE" : "DRAW");
-                float rate = redWinsNum > blueWinsNum
-                    ? (blueWinsNum == 0 ? 1 : (float) blueWinsNum/redWinsNum)
+                double rate = redWinsNum > blueWinsNum
+                    ? (blueWinsNum == 0 ? 1 : redWinsNum / (double) blueWinsNum)
                     : redWinsNum < blueWinsNum
-                        ? (redWinsNum == 0 ? 1 : (float) redWinsNum/blueWinsNum)
+                        ? (redWinsNum == 0 ? 1 : blueWinsNum / (double) redWinsNum)
                         : 0f;
                 item.SubItems.Add(redWinsNum == blueWinsNum ? TextNoValue : rate.ToString("0.##"));
                 itemsSummary.Add(item);
             }
 
+            //Fill per player efficiency
+            foreach (string map in efficiencyPerPlayer.Keys)
+            {
+                ListViewGroup groupEfficiency = new ListViewGroup(map);
+                FillEfficiencyListView(groupEfficiency, map, efficiencyPerPlayer);
+                if (groupEfficiency.Items.Count > 0)
+                {
+                    groupsEfficiency.Add(groupEfficiency);
+                }
+            }
+
             lvStatistic.Groups.AddRange(groupsStatistic.ToArray());
             lvDetailed.Groups.AddRange(groupsDetailed.ToArray());
             lvSummary.Items.AddRange(itemsSummary.ToArray());
+            lvEfficiency.Groups.AddRange(groupsEfficiency.ToArray());
 
             //Prepare columns
             lvStatistic.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
@@ -329,8 +411,13 @@ namespace Q3LogAnalyzer.Forms
 
             lvSummary.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
             lvSummary.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-            lvSummary.Columns[lvSummary.Columns.Count - 1].Width = 160;
+            lvSummary.Columns[lvSummary.Columns.Count - 1].Width = 50;
             lvSummary.Sort();
+
+            lvEfficiency.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            lvEfficiency.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            lvEfficiency.Columns[lvEfficiency.Columns.Count - 1].Width = 585;
+            lvEfficiency.Sort();
 
             CollapseAll(true);
 

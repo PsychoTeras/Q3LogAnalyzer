@@ -9,14 +9,14 @@ namespace Q3LogAnalyzer.Classes
 
 #region Properties
 
-        public string Map { get; private set; }
-        public GameType GameType { get; private set; }
-        public string StartTime { get; private set; }
+        public string Map { get; }
+        public GameType GameType { get; }
+        public string StartTime { get; }
         public string EndTime { get; private set; }
 
-        public TeamList Teams { get; private set; }
-        public PlayerList Players { get; private set; }
-        public RecordList Records { get; private set; }
+        public TeamList Teams { get; }
+        public PlayerList Players { get; }
+        public RecordList Records { get; }
 
         private TimeSpan? _sDuration;
         public TimeSpan Duration
@@ -131,7 +131,7 @@ namespace Q3LogAnalyzer.Classes
                             (
                                 s => s.Player.Team == team
                             );
-                        float teamEfficiencySum = teamStats.Sum(s => s.IntermediateEfficiency);
+                        double teamEfficiencySum = teamStats.Sum(s => s.IntermediateEfficiency);
                         foreach (Statistics stat in teamStats)
                         {
                             stat.CalculateFinal(teamEfficiencySum);
@@ -168,5 +168,6 @@ namespace Q3LogAnalyzer.Classes
         }
 
 #endregion
+
     }
 }

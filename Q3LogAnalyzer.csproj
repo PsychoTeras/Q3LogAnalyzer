@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Classes\EventType.cs" />
     <Compile Include="Classes\GameType.cs" />
+    <Compile Include="Classes\PerPlayerEff.cs" />
     <Compile Include="Classes\TeamStatistics.cs" />
     <Compile Include="Classes\TeamList.cs" />
     <Compile Include="Controls\ControlCheckBox.cs">
