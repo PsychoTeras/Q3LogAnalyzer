@@ -235,11 +235,13 @@ namespace Q3LogAnalyzer.Forms
             }
             lvDetailed.Columns.AddRange(headers.ToArray());
 
-            int processedSessionsCount = 0,
-                sessionsCount = btnFilterLast50Games.Checked
-                    ? Math.Min(_sessions.Count, 50)
-                    : _sessions.Count,
-                sessionIdx = sessionsCount;
+            int processedSessionsCount = 0;
+            int sessionsCount = btnFilterLast50Games.Checked
+                ? Math.Min(_sessions.Count, 50)
+                : btnFilterLastGame.Checked
+                    ? Math.Min(_sessions.Count, 1)
+                    : _sessions.Count;
+            int sessionIdx = sessionsCount;
 
             List<ListViewGroup> groupsStatistic = new List<ListViewGroup>(sessionIdx);
             List<ListViewGroup> groupsDetailed = new List<ListViewGroup>(sessionIdx);
@@ -352,7 +354,12 @@ namespace Q3LogAnalyzer.Forms
                 }
                 groupStatistic.Header = groupDetailed.Header = sessionHeader;
 
-                if (btnFilterLast50Games.Checked && ++processedSessionsCount == 50) break;
+                ++processedSessionsCount;
+                if ((btnFilterLast50Games.Checked && processedSessionsCount == 50) ||
+                    (btnFilterLastGame.Checked && processedSessionsCount == 1))
+                {
+                    break;
+                }
             }
 
             //Fill sessions summary statistics
@@ -591,8 +598,16 @@ namespace Q3LogAnalyzer.Forms
             Cursor = Cursors.Default;
         }
 
-        private void BtnFilterLast50GamesClick(object sender, EventArgs e)
+        private void BtnFilterLastGamesClick(object sender, EventArgs e)
         {
+            if (sender == btnFilterLastGame)
+            {
+                btnFilterLast50Games.Checked = false;
+            }
+            else
+            {
+                btnFilterLastGame.Checked = false;
+            }
             ReloadSessions();
         }
 
