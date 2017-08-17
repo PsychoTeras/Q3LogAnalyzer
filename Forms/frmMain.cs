@@ -15,6 +15,7 @@ namespace Q3LogAnalyzer.Forms
     public partial class frmMain : Form
     {
         private const string TextNoValue = "-";
+        private const string TextInfinite = "∞";
         private const string TextTotal = "TOTAL";
 
         private string _currentPath;
@@ -385,7 +386,12 @@ namespace Q3LogAnalyzer.Forms
                     : redWinsNum < blueWinsNum
                         ? (redWinsNum == 0 ? 1 : blueWinsNum / (double) redWinsNum)
                         : 0f;
-                item.SubItems.Add(redWinsNum == blueWinsNum ? TextNoValue : rate.ToString("0.##"));
+                string sRate = redWinsNum == blueWinsNum
+                    ? TextNoValue
+                    : redWinsNum == 0 || blueWinsNum == 0
+                        ? TextInfinite
+                        : rate.ToString("0.##");
+                item.SubItems.Add(sRate);
                 itemsSummary.Add(item);
             }
 
