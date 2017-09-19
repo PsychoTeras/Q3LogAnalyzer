@@ -496,7 +496,7 @@ namespace Q3LogAnalyzer.Forms
                 _sessions = ReadSessionsFromService(serviceName) ?? ReadSessionsFromFile(logFileName);
                 if (_sessions == null)
                 {
-                    return false;
+                    throw new Exception();
                 }
 
                 ReloadSessions();
