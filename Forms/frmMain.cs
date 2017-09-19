@@ -466,12 +466,20 @@ namespace Q3LogAnalyzer.Forms
                 EndpointAddress address = new EndpointAddress(new Uri(_serviceUrl));
                 _logFileService = new LogFileSvcSoapClient(svcBinding, address);
                 byte[] data = _logFileService.ReadLogfile();
+                if (data == null)
+                {
+                    throw new FileLoadException();
+                }
                 return SessionList.FromMemory(data);
+            }
+            catch (FileLoadException)
+            {
+                throw;
             }
             catch
             {
-                MessageBox.Show("Unable to access to Q3LA service", "Error", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Unable to access to Q3LA service", "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 return null;
             }
         }
@@ -496,7 +504,7 @@ namespace Q3LogAnalyzer.Forms
                 _sessions = ReadSessionsFromService(serviceName) ?? ReadSessionsFromFile(logFileName);
                 if (_sessions == null)
                 {
-                    throw new Exception();
+                    return false;
                 }
 
                 ReloadSessions();
