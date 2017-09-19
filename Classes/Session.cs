@@ -66,11 +66,18 @@ namespace Q3LogAnalyzer.Classes
         public void AcceptPlayer(string name, string team)
         {
             Team playerTeam;
-            try
+            if (team != string.Empty)
             {
-                playerTeam = (Team)Enum.Parse(typeof(Team), team);
+                try
+                {
+                    playerTeam = (Team) Enum.Parse(typeof(Team), team);
+                }
+                catch
+                {
+                    playerTeam = Team.single_player;
+                }
             }
-            catch
+            else
             {
                 playerTeam = Team.single_player;
             }

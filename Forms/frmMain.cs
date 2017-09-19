@@ -4,10 +4,14 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
+using System.ServiceModel;
 using System.Windows.Forms;
+using System.Xml;
 using Q3LogAnalyzer.Classes;
 using Q3LogAnalyzer.Controls.GraphLib;
 using Q3LogAnalyzer.Helpers;
+using Q3LogAnalyzer.LogFileService;
+
 // ReSharper disable All
 
 namespace Q3LogAnalyzer.Forms
@@ -20,8 +24,8 @@ namespace Q3LogAnalyzer.Forms
 
         private string _currentPath;
         private string _currentLogFile;
-        private bool _copyLogLocally;
-
+        private string _serviceUrl;
+        
         private SessionList _sessions;
         private Dictionary<ListView, ColumnSorter> _lvColumnSorters;
 
@@ -35,6 +39,8 @@ namespace Q3LogAnalyzer.Forms
         private Brush _brushSelection;
         private Brush _brushRowTotal;
         private Pen _penGrayDash;
+
+        private LogFileSvcSoapClient _logFileService;
 
         public frmMain()
         {
@@ -50,11 +56,11 @@ namespace Q3LogAnalyzer.Forms
                 string arg = args[i].ToLower();
                 switch (arg)
                 {
-                    case "-c":
-                        _copyLogLocally = true;
-                        break;
                     case "-f":
                         if (++i < args.Length) _currentLogFile = args[i];
+                        break;
+                    case "-s":
+                        if (++i < args.Length) _serviceUrl = args[i] + "/LogFileSvc.asmx";
                         break;
                 }
             }
@@ -62,16 +68,11 @@ namespace Q3LogAnalyzer.Forms
 
         private void ProcessStartParams()
         {
-            if (!string.IsNullOrEmpty(_currentLogFile))
+            if (!string.IsNullOrEmpty(_currentLogFile) || !string.IsNullOrEmpty(_serviceUrl))
             {
                 using (new frmLoading())
                 {
-                    if (LoadLogFile(_currentLogFile) && _copyLogLocally)
-                    {
-                        string destFileName = Path.GetFileName(_currentLogFile);
-                        string destFilePath = Path.Combine(Application.StartupPath, destFileName);
-                        File.Copy(_currentLogFile, destFilePath, true);
-                    }
+                    ReadLogData(_serviceUrl, _currentLogFile);
                 }
                 Helper.BringWindowToFront(Handle);
             }
@@ -441,36 +442,90 @@ namespace Q3LogAnalyzer.Forms
             Cursor = Cursors.Default;
         }
 
-        private bool LoadLogFile(string logFileName)
+        private SessionList ReadSessionsFromService(string serviceName)
+        {
+            if (string.IsNullOrEmpty(serviceName))
+            {
+                return null;
+            }
+
+            try
+            {
+                BasicHttpBinding svcBinding = new BasicHttpBinding
+                {
+                    Name = "LogFileSvcSoap",
+                    MaxBufferSize = int.MaxValue,
+                    MaxReceivedMessageSize = int.MaxValue,
+                    ReaderQuotas = new XmlDictionaryReaderQuotas
+                    {
+                        MaxDepth = 32,
+                        MaxArrayLength = int.MaxValue,
+                        MaxStringContentLength = int.MaxValue
+                    }
+                };
+                EndpointAddress address = new EndpointAddress(new Uri(_serviceUrl));
+                _logFileService = new LogFileSvcSoapClient(svcBinding, address);
+                byte[] data = _logFileService.ReadLogfile();
+                return SessionList.FromMemory(data);
+            }
+            catch
+            {
+                MessageBox.Show("Unable to access to Q3LA service", "Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+        }
+
+        private SessionList ReadSessionsFromFile(string logFileName)
         {
             if (string.IsNullOrEmpty(logFileName) || !File.Exists(logFileName))
             {
+                return null;
+            }
+            return SessionList.FromFile(logFileName);
+        }
+
+        private bool ReadLogData(string serviceName, string logFileName)
+        {
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+
+                HRTimer timer = HRTimer.CreateAndStart();
+
+                _sessions = ReadSessionsFromService(serviceName) ?? ReadSessionsFromFile(logFileName);
+                if (_sessions == null)
+                {
+                    return false;
+                }
+
+                ReloadSessions();
+
+                double loadedAt = timer.StopWatch();
+                slFileName.Text = string.Format("File: {0}", logFileName);
+                slLoadingTime.Text = string.Format("Loaded at {0:0.000} msec", loadedAt);
+
+                _currentLogFile = logFileName;
+                return true;
+            }
+            catch
+            {
+                MessageBox.Show("Unable to load log file\nPossible it is still locked by Quake",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-
-            Cursor = Cursors.WaitCursor;
-
-            HRTimer timer = HRTimer.CreateAndStart();
-
-            _sessions = SessionList.FromFile(logFileName);
-            ReloadSessions();
-
-            double loadedAt = timer.StopWatch();
-            slFileName.Text = string.Format("File: {0}", logFileName);
-            slLoadingTime.Text = string.Format("Loaded at {0:0.000} msec", loadedAt);
-            
-            _currentLogFile = logFileName;
-
-            Cursor = Cursors.Default;
-
-            return true;
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
         }
 
         private void BtnLogOpenClick(object sender, EventArgs e)
         {
-            if (ofdQ3Log.ShowDialog() == DialogResult.OK)
+            if (ofdQ3Log.ShowDialog() == DialogResult.OK && !ReadLogData(null, ofdQ3Log.FileName))
             {
-                LoadLogFile(ofdQ3Log.FileName);
+                MessageBox.Show("Unable to load log file\nPossible it is not available or broken", 
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
