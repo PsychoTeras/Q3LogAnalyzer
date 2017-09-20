@@ -48,6 +48,12 @@ namespace Q3LogAnalyzer.Forms
             InitializeApplication();
         }
 
+        private void ShowMessage(string text, string caption, MessageBoxIcon icon)
+        {
+            Application.OpenForms[0].Invoke(new Action(() =>
+                MessageBox.Show(Application.OpenForms[0], text, caption, MessageBoxButtons.OK, icon)));
+        }
+
         private void ParseCommandLineParams()
         {
             string[] args = Environment.GetCommandLineArgs();
@@ -478,8 +484,7 @@ namespace Q3LogAnalyzer.Forms
             }
             catch
             {
-                MessageBox.Show("Unable to access to Q3LA service", "Error", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                ShowMessage("Unable to access Q3LA service", "Error", MessageBoxIcon.Error);
                 return null;
             }
         }
@@ -518,8 +523,8 @@ namespace Q3LogAnalyzer.Forms
             }
             catch
             {
-                MessageBox.Show("Unable to load log file\nPossible it is still locked by Quake",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowMessage("Unable to load log file\nPossible it is still locked by Quake", 
+                    "Error", MessageBoxIcon.Error);
                 return false;
             }
             finally
@@ -532,19 +537,18 @@ namespace Q3LogAnalyzer.Forms
         {
             if (ofdQ3Log.ShowDialog() == DialogResult.OK && !ReadLogData(null, ofdQ3Log.FileName))
             {
-                MessageBox.Show("Unable to load log file\nPossible it is not available or broken", 
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowMessage("Unable to load log file\nPossible it is not available or broken", 
+                    "Error", MessageBoxIcon.Error);
             }
         }
 
-        public static void ExportToExcel(ListView lv, string prmBookName, string prmPath)
+        public void ExportToExcel(ListView lv, string prmBookName, string prmPath)
         {
             try
             {
                 if (lv.Items.Count == 0)
                 {
-                    MessageBox.Show("No items to export", "System Information",
-                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    ShowMessage("No items to export", "System Information", MessageBoxIcon.Exclamation);
                     return;
                 }
 
@@ -576,12 +580,11 @@ namespace Q3LogAnalyzer.Forms
                     }
                 }
 
-                MessageBox.Show("Finished:\n" + fullFileName, "Export to Excel", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ShowMessage("Finished:\n" + fullFileName, "Export to Excel", MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                ShowMessage(ex.Message, "Error", MessageBoxIcon.Error);
             }
         }
 
