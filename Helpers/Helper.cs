@@ -12,8 +12,8 @@ namespace Q3LogAnalyzer.Helpers
 #region Constants
 
         private const int WM_SETREDRAW = 0x000B;
-        private const int LVM_FIRST = 0x1000;                    
-        private const int LVM_SETGROUPINFO = (LVM_FIRST + 147);
+        private const int LVM_FIRST = 0x1000;
+        private const int LVM_SETGROUPINFO = LVM_FIRST + 147;
         private const int LVGF_STATE = 0x004;
 
 #endregion
@@ -90,29 +90,27 @@ namespace Q3LogAnalyzer.Helpers
         public static void SetGroupCollapse(ListView listView, GroupState state, 
             int groupsCount)
         {
+            LVGROUP group = new LVGROUP();
+            group.cbSize = Marshal.SizeOf(group);
+            group.state = (int)(state | GroupState.Collapsible);
+            group.mask = LVGF_STATE;
+            IntPtr ptr = Marshal.AllocHGlobal(group.cbSize);
+
             for (int i = 0; i < groupsCount; i++)
             {
-                if (i == listView.Groups.Count)
-                {
-                    break;
-                }
+                if (i == listView.Groups.Count) break;
 
                 ListViewGroup lvGroup = listView.Groups[i];
                 int? id = GetListViewGroupId(lvGroup);
-                int groupId = id.HasValue ? id.Value : listView.Groups.IndexOf(lvGroup);
+                group.iGroupId = id.HasValue ? id.Value : listView.Groups.IndexOf(lvGroup);
 
-                LVGROUP group = new LVGROUP();
-                group.cbSize = Marshal.SizeOf(group);
-                group.state = (int) (state | GroupState.COLLAPSIBLE);
-                group.mask = LVGF_STATE;
-                group.iGroupId = groupId;
-                
-                IntPtr ptr = Marshal.AllocHGlobal(group.cbSize);
                 Marshal.StructureToPtr(group, ptr, false);
-                SendMessage(listView.Handle, LVM_SETGROUPINFO, groupId, ptr);
+                SendMessage(listView.Handle, LVM_SETGROUPINFO, group.iGroupId, ptr);
             }
-        }
 
+            Marshal.FreeHGlobal(ptr);
+        }
+        
         public static string RemoveNameColorizing(string name)
         {
             return _regexRemoveNameColorizing.Replace(name, "");
@@ -144,8 +142,8 @@ namespace Q3LogAnalyzer.Helpers
     [Flags]
     public enum GroupState
     {
-        COLLAPSIBLE = 8,
-        COLLAPSED = 1,
-        EXPANDED = 0
+        Collapsible = 8,
+        Collapsed = 1,
+        Expanded = 0
     }
 }

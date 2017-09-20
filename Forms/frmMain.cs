@@ -211,6 +211,12 @@ namespace Q3LogAnalyzer.Forms
             lvEfficiency.Items.AddRange(efficiencyItems.ToArray());
         }
 
+        private void AddCollapsibleGroups(ListView listView, ICollection<ListViewGroup> group, GroupState state)
+        {
+            listView.Groups.AddRange(group.ToArray());
+            Helper.SetGroupCollapse(listView, state);
+        }
+
         private void ReloadSessions()
         {
             if (_sessions == null) return;
@@ -413,10 +419,10 @@ namespace Q3LogAnalyzer.Forms
                 }
             }
 
-            lvStatistic.Groups.AddRange(groupsStatistic.ToArray());
-            lvDetailed.Groups.AddRange(groupsDetailed.ToArray());
+            AddCollapsibleGroups(lvStatistic, groupsStatistic, GroupState.Collapsed);
+            AddCollapsibleGroups(lvDetailed, groupsDetailed, GroupState.Collapsed);
+            AddCollapsibleGroups(lvEfficiency, groupsEfficiency, GroupState.Expanded);
             lvSummary.Items.AddRange(itemsSummary.ToArray());
-            lvEfficiency.Groups.AddRange(groupsEfficiency.ToArray());
 
             //Prepare columns
             lvStatistic.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
@@ -439,7 +445,8 @@ namespace Q3LogAnalyzer.Forms
             lvEfficiency.Columns[lvEfficiency.Columns.Count - 1].Width = 585;
             lvEfficiency.Sort();
 
-            CollapseAll(true);
+            ActiveListViewCollapseAllGroups();
+            ExpandFirstStaticRecord();
 
             RefreshPerfGraph();
 
@@ -521,7 +528,7 @@ namespace Q3LogAnalyzer.Forms
                 _currentLogFile = logFileName;
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
                 ShowMessage("Unable to load log file\nPossible it is still locked by Quake", 
                     "Error", MessageBoxIcon.Error);
@@ -604,35 +611,56 @@ namespace Q3LogAnalyzer.Forms
             ExportToExcel(lvStatistic, fileName, _currentPath);
         }
 
-        private void ExpandAll()
+        private void ActiveListViewExpandAllGroups()
         {
-            Helper.SetGroupCollapse(lvStatistic, GroupState.EXPANDED);
-            Helper.SetGroupCollapse(lvDetailed, GroupState.EXPANDED);
+            switch (tcMain.SelectedIndex)
+            {
+                case 0:
+                    Helper.SetGroupCollapse(lvStatistic, GroupState.Expanded);
+                    break;
+                case 1:
+                    Helper.SetGroupCollapse(lvDetailed, GroupState.Expanded);
+                    break;
+                case 3:
+                    Helper.SetGroupCollapse(lvEfficiency, GroupState.Expanded);
+                    break;
+            }
         }
 
-        private void CollapseAll(bool expandFirst)
+        private void ActiveListViewCollapseAllGroups()
         {
-            Helper.SetGroupCollapse(lvStatistic, GroupState.COLLAPSED);
-            Helper.SetGroupCollapse(lvDetailed, GroupState.COLLAPSED);
-            if (expandFirst)
+            switch (tcMain.SelectedIndex)
             {
-                Helper.SetGroupCollapse(lvStatistic, GroupState.EXPANDED, 1);
-                if (lvStatistic.Groups.Count > 0 && lvDetailed.Groups.Count > 0 &&
-                    lvStatistic.Groups[0].Tag == lvDetailed.Groups[0].Tag)
-                {
-                    Helper.SetGroupCollapse(lvDetailed, GroupState.EXPANDED, 1);
-                }
+                case 0:
+                    Helper.SetGroupCollapse(lvStatistic, GroupState.Collapsed);
+                    break;
+                case 1:
+                    Helper.SetGroupCollapse(lvDetailed, GroupState.Collapsed);
+                    break;
+                case 3:
+                    Helper.SetGroupCollapse(lvEfficiency, GroupState.Collapsed);
+                    break;
+            }
+        }
+
+        private void ExpandFirstStaticRecord()
+        {
+            Helper.SetGroupCollapse(lvStatistic, GroupState.Expanded, 1);
+            if (lvStatistic.Groups.Count > 0 && lvDetailed.Groups.Count > 0 &&
+                lvStatistic.Groups[0].Tag == lvDetailed.Groups[0].Tag)
+            {
+                Helper.SetGroupCollapse(lvDetailed, GroupState.Expanded, 1);
             }
         }
 
         private void BtnExpandAllClick(object sender, EventArgs e)
         {
-            ExpandAll();
+            ActiveListViewExpandAllGroups();
         }
 
         private void BtnCollapsAllClick(object sender, EventArgs e)
         {
-            CollapseAll(false);
+            ActiveListViewCollapseAllGroups();
         }
 
         private void ListViewColumnClick(object sender, ColumnClickEventArgs e)
